@@ -1,0 +1,8 @@
+dataset:
+  table: "main.analytics.transactions"   # or: file: "dbfs:/FileStore/path.csv"
+  target: null
+  time_col: null
+artifacts_dir: "/Volumes/main/analytics/ds_assistant_artifacts"
+react:
+  max_steps: 12
+  skip_vif_if_cols_gt: 200
