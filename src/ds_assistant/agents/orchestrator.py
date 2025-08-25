@@ -15,7 +15,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
 
-from ..common.schemas import RunState, ProblemSummary, Recommendation
+from ..common.schemas import ProblemSummary, Recommendation
 from ..tools import data_profiling, relationships, timeseries, recommender, report_builder
 
 # Enhanced state management with LangGraph TypedDict
@@ -642,42 +642,4 @@ Decide the next step and provide reasoning."""),
         
         return final_state
 
-# Legacy function for backward compatibility (deprecated)
-def run_prechecks(df: pl.DataFrame, dataset_ref: str, target: Optional[str] = None, 
-                 time_col: Optional[str] = None, artifacts_dir: str = "./artifacts") -> RunState:
-    """
-    DEPRECATED: Use DSOrchestrator.run_analysis() instead
-    This function is kept for backward compatibility but will be removed in future versions
-    """
-    import warnings
-    warnings.warn(
-        "run_prechecks() is deprecated. Use DSOrchestrator.run_analysis() for intelligent analysis.",
-        DeprecationWarning,
-        stacklevel=2
-    )
-    
-    # Create a minimal orchestrator for legacy support
-    from langchain_core.language_models import FakeListLLM
-    llm = FakeListLLM(responses=["data_profiling"])
-    orchestrator = DSOrchestrator(llm, [])
-    
-    # Run the enhanced analysis
-    enhanced_state = orchestrator.run_analysis(dataset_ref, target, time_col, artifacts_dir)
-    
-    # Convert back to legacy RunState format
-    legacy_state = RunState(
-        run_id=enhanced_state["run_id"],
-        dataset_ref=enhanced_state["dataset_ref"],
-        target=enhanced_state["target"],
-        time_col=enhanced_state["time_col"],
-        artifacts_dir=enhanced_state["artifacts_dir"],
-        basic_profile=enhanced_state["analysis_results"].get("data_profiling", {}),
-        scale_check=enhanced_state["analysis_results"].get("data_profiling", {}),
-        corr_and_vif=enhanced_state["analysis_results"].get("feature_analysis", {}),
-        outliers=enhanced_state["analysis_results"].get("feature_analysis", {}),
-        time_series=enhanced_state["analysis_results"].get("time_series", {}),
-        summary=enhanced_state["final_recommendation"],
-        recommendation=enhanced_state["final_recommendation"]
-    )
-    
-    return legacy_state
+
